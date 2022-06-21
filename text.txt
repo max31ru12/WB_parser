@@ -1,0 +1,353 @@
+from bs4 import BeautifulSoup
+from matplotlib import pyplot as plt
+import requests
+import re
+
+
+f = open('text.txt', 'w')
+f.write('\tСПИСОК НАЙДЕННЫХ ТЕРМИНОВ:')
+
+
+#Функция получения абсолютно всего кода со страницы HTML
+def get_html(url):
+    response = requests.get(url)
+    return response.content
+
+
+#Проверка сайта на работоспособность. Если сайт не работает - его дальше не пропустит
+def status_code(url):
+    response = requests.get(url)
+    assert response.status_code != 404
+
+
+#Функция ввода текста. Обрабатывается с помощью регулярных выражений
+def input_text(text):
+    text = re.sub(r'[^\w\s]', '', text)
+    text = text.lower()
+    splitted_text = text.split()
+    return splitted_text
+
+
+def get_marketing(text):
+    mar=0
+    print("\nМАРКЕТИНГОВЫЕ ТЕРМИНЫ")
+    f.write("\n\nМАРКЕТИНГОВЫЕ ТЕРМИНЫ")
+    url = 'https://callibri.ru/glossary'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    for i in text:
+        for word in soup.find_all('a', class_='a_glossary_main word-link'):
+            word = word.text
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                mar += 1
+            except:
+                pass
+    return mar
+
+
+def get_economics(text):
+    eco=0
+    print("\nЭКОНОМИЧЕСКИЕ ТЕРМИНЫ")
+    f.write("\n\nЭКОНОМИЧЕСКИЕ ТЕРМИНЫ")
+    url = 'http://www.fingramota.org/servisy/slovar'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    for i in text:
+        for word in soup.find_all('h4'):
+            word = word.text
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                eco+=1
+            except:
+                pass
+    return eco
+
+
+def get_mathematics(text):
+    mat=0
+    print("\nМАТЕМАТИЧЕСКИЕ ТЕРМИНЫ")
+    f.write("\n\nМАТЕМАТИЧЕСКИЕ ТЕРМИНЫ")
+    url = 'http://pochemuha.ru/slovar-terminov-po-matematike-ot-a-do-ya'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    for i in text:
+        for word in soup.find_all('strong'):
+            word = word.text
+
+            try:
+                result = re.search(word[0:-1], i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word[0:-1], i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                mat += 1
+            except:
+                pass
+    return mat
+
+
+def get_it(text):
+    sk = 0
+    print("\nСОЦИАЛЬНО-КОМПЬЮТЕРНЫЕ ТЕРМИНЫ")
+    f.write("\n\nСОЦИАЛЬНО-КОМПЬЮТЕРНЫЕ ТЕРМИНЫ")
+    url = 'http://book.kbsu.ru/theory/definition.html'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    for i in text:
+        for word in soup.find_all('b'):
+
+            word = word.text
+            try:
+                result = re.search(word[0:-1], i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word[0:-1], i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                sk += 1
+            except:
+                pass
+    return sk
+
+
+def get_management(text):
+    man=0
+    print("\nОРГАНИЗАЦИОННЫЕ ТЕРМИНЫ")
+    f.write("\n\nОРГАНИЗАЦИОННЫЕ ТЕРМИНЫ")
+    url = 'https://econ.wikireading.ru/66680'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    for i in text:
+        for word in soup.find_all('strong'):
+
+            word = word.text
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                man += 1
+            except:
+                pass
+    return man
+
+
+def get_physics(text):
+    phy = 0
+    print("\nФИЗИЧЕСКИЕ ТЕРМИНЫ")
+    f.write("\n\nФИЗИЧЕСКИЕ ТЕРМИНЫ")
+    url = 'https://www.fieldphysics.ru/glossary/'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    for i in text:
+        for word in soup.find_all('a'):
+            word = word.text
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                phy += 1
+            except:
+                pass
+    return phy
+
+def get_technic(text):
+    tec = 0
+    print("\nТЕХНИЧЕСКИХ ТЕРМИНЫ")
+    f.write("\n\nТЕХНИЧЕСКИХ ТЕРМИНЫ")
+    url = 'http://berezaklim.ru/u4eb_rabota/metodika/texno/texno5/termin.htm'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    print(soup)
+    for i in text:
+        for word in soup.find_all('b'):
+            word = word.text
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                tec += 1
+            except:
+                pass
+    return tec
+
+
+def get_uridic(text):
+    uri = 0
+    print("\nНОРМАТИВНО-ПРАВОВЫЕ ТЕРМИНЫ")
+    f.write("\n\nНОРМАТИВНО-ПРАВОВЫЕ ТЕРМИНЫ")
+    url = 'https://68.xn--b1aew.xn--p1ai/Nashi_proekti/%D1%81%D0%BB%D0%BE%D0%B2%D0%B0%D1%80%D1%8C-%D1%8E%D1%80%D0%B8%D0%B4%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D1%85-%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%BE%D0%B2'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    for i in text:
+        for word in soup.find_all('strong'):
+            word = word.text
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                uri += 1
+            except:
+                pass
+    return uri
+
+
+def get_doctrin(text):
+    doc = 0
+    print("\nДОКТРИНАЛЬНЫЕ ТЕРМИНЫ")
+    f.write("\n\nДОКТРИНАЛЬНЫЕ ТЕРМИНЫ")
+    url = 'https://justicemaker.ru/termins.php?id=2'
+    html = get_html(url)
+    status_code(url)
+    soup = BeautifulSoup(html, features="lxml")
+    for i in text:
+        for word in soup.find_all('li'):
+            word = word.text
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+            except:
+                pass
+
+            word = word.lower()
+
+            try:
+                result = re.search(word, i)
+                print(result.group(0))
+                f.write('\n'+result.group(0))
+                doc += 1
+            except:
+                pass
+    return doc
+
+text = input_text(input("Введите ваш текст:"))
+
+man = float(get_management(text))
+eco = float(get_economics(text))
+mar = float(get_marketing(text))
+sk = float(get_it(text))
+phy = float(get_physics(text))
+tec = float(get_technic(text))
+mat = float(get_mathematics(text))
+uri = float(get_uridic(text))
+doc = float(get_doctrin(text))
+
+total = float(man+eco+mar+sk+phy+tec+mat+uri+doc)
+
+man = float(round((man/total)*100))
+eco = float(round((eco/total)*100))
+mar = float(round((mar/total)*100))
+sk = float(round((sk/total)*100))
+phy = float(round((phy/total)*100))
+tec = float(round((tec/total)*100))
+mat = float(round((mat/total)*100))
+uri = float(round((uri/total)*100))
+doc = float(round((doc/total)*100))
+print('СТИЛЬ ТЕКСТА:\n')
+print('Маркетинговый на '+str(mar)+'%')
+print('Экономический на '+str(eco)+'%')
+print('Организационный на '+str(man)+'%')
+print('Социально-компьютерный на '+str(sk)+'%')
+print('Физический на '+str(phy)+'%')
+print('Технический на '+str(tec)+'%')
+print('Математический на '+str(mat)+'%')
+print('Юридический на '+str(uri)+'%')
+print('Доктринальный на '+str(doc)+'%')
+
+vals = [mar, eco, man, sk, phy, tec, mat, uri, doc]
+labels = ["Маркетинговый", "Экономический", "Организационный","Социально-компьютерный","Физический","Технический","Математический","Юридический","Доктринальный"]
+fig, ax = plt.subplots()
+ax.pie(vals, labels=labels, autopct='%1.1f%%', shadow=True, wedgeprops={'lw':1, 'ls':'--','edgecolor':"k"}, rotatelabels=True)
+ax.axis("equal")
+plt.show()
+
+f.close()
+
+#get_it(text) - ПЛОХО
+#get_physics(text) - НОРМАЛЬНО
+#get_technic(text) - ПЛОХО
+#get_mathematics(text) - НОРМАЛЬНО
+#get_uridic(text) - НОРМАЛЬНО
+#get_doctrin(text) - НОРМАЛЬНО
