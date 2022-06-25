@@ -105,16 +105,36 @@ href_list = []
 info_list = []
 firm_name_done = []
 
+xpath1 = [
+    '//*[@id="c81887951"]',
+    '//*[@id="catalog-content"]',
+    '//*[@id="catalog-content"]',
+    '//*[@id="catalog-content"]',
+    '//*[@id="catalog-content"]',
+    '//*[@id="catalog-content"]',
+    '//*[@id="catalog-content"]',
+    '//*[@id="catalog-content"]'
+]
+xpath2 = [
+    '//*[@id="catalog-content"]/div/div',
+    '//*[@id="catalog-content"]/div/div',
+    '//*[@id="catalog-content"]/div/div',
+    '//*[@id="catalog-content"]/div/div',
+    '//*[@id="catalog-content"]/div/div',
+    '//*[@id="catalog-content"]/div/div',
+    '//*[@id="catalog-content"]/div/div',
+    '//*[@id="catalog-content"]/div/div'
+]
 
 
-
-def parse_page_one():
+def parse_page_one(url):
+    info_list.clear
     driver = webdriver.Chrome()
-    driver.get(url = page_urls[0])
+    driver.get(url = url)
     element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, '//*[@id="c81887951"]'))
+        EC.presence_of_element_located((By.XPATH, xpath1[0]))
     )
-    el = driver.find_element(By.XPATH, '//*[@id="catalog-content"]/div/div').find_elements(By.CLASS_NAME, 'product-card.j-card-item.j-good-for-listing-event')
+    el = driver.find_element(By.CLASS_NAME, 'product-card-list').find_elements(By.CLASS_NAME, 'product-card.j-card-item.j-good-for-listing-event')
 
     for element in el:
         info = element.find_element(By.CLASS_NAME, 'product-card__wrapper')
@@ -133,16 +153,16 @@ def parse_page_one():
     date = datetime.now().strftime('%d_%m_%Y')
 
     pattern = r'(\w+\s)?\w+\s/'
-    i = 1
-
 
     for el in info_list:
         result = re.search(pattern, el)
+        # print(el, i)
         if result == None:
             result = 'Мистраль..'
             firm_name.append(result)
             continue
         firm_name.append(result[0])
+    print(info_list[0])
 
     for name in firm_name:
         name = re.sub(r'\s/', '', name)
@@ -151,12 +171,55 @@ def parse_page_one():
     with open(f'hrefs_{date}.txt', 'w', encoding='utf-8') as f:
         for el in href_list:
             f.write(f'{el}\n')
-    if date == '23_06_2022':
-        selenium_table = pd.DataFrame({'name': 'Хлопья овсяные',
-                              'brand name': firm_name_done,
-                              'href': href_list
-                                })
-        selenium_table.to_excel(f'another_table{date}.xlsx')
+
+
+
+
+def parse_page_two(url):
+    firm_name.clear()
+    info_list_two = []
+    driver = webdriver.Chrome()
+    driver.get(url = url)
+    element = WebDriverWait(driver, 20).until(
+        EC.presence_of_element_located((By.XPATH, xpath1[1]))
+    )
+    el = driver.find_element(By.XPATH, xpath2[1]).find_elements(By.CLASS_NAME, 'product-card.j-card-item.j-good-for-listing-event')
+
+    for element in el:
+        info = element.find_element(By.CLASS_NAME, 'product-card__wrapper')
+        a_tag = element.find_element(By.CLASS_NAME, 'product-card__wrapper').find_element(By.TAG_NAME, 'a')
+        href = a_tag.get_attribute('href')
+        href_list.append(href)
+        info_list_two.append(info.text)
+
+    el_two = driver.find_element(By.CLASS_NAME, 'product-card-list').find_elements(By.CLASS_NAME, 'product-card.j-card-item')
+    for element in el_two:
+        info_two = element.find_element(By.CLASS_NAME, 'product-card__wrapper')
+        a_tag_two = element.find_element(By.CLASS_NAME, 'product-card__wrapper').find_element(By.TAG_NAME, 'a')
+        href_two = a_tag_two.get_attribute('href')
+        href_list.append(href_two)
+        info_list_two.append(info_two.text)
+    date = datetime.now().strftime('%d_%m_%Y')
+
+    pattern = r'(\w+\s)?\w+\s/'
+
+    for el in info_list_two:
+        result = re.search(pattern, el)
+        # print(el, i)
+        if result == None:
+            result = 'Мистраль..'
+            firm_name.append(result)
+        else:
+            firm_name.append(result[0])
+
+
+    for name in firm_name:
+        name = re.sub(r'\s/', '', name)
+        firm_name_done.append(name)
+
+    with open(f'hrefs_{date}.txt', 'w', encoding='utf-8') as f:
+        for el in href_list:
+            f.write(f'{el}\n')
 
 
 
@@ -174,7 +237,42 @@ def main():
             collect_data_two(json_page, count_two)
             count_two = count_two + 1
 
-    parse_page_one()
+    parse_page_one(page_urls[0])
+    # time.sleep(60)
+    # print(1)
+    # parse_page_two(page_urls[1])
+    # time.sleep(60)
+    # print(2)
+    # parse_page_two(page_urls[2])
+    # time.sleep(60)
+    # print(3)
+    # parse_page_two(page_urls[3])
+    # time.sleep(60)
+    # print(4)
+    # parse_page_two(page_urls[4])
+    # time.sleep(60)
+    # print(5)
+    # parse_page_two(page_urls[5])
+    # time.sleep(60)
+    # print(6)
+    # parse_page_two(page_urls[6])
+    # time.sleep(60)
+    # print(7)
+    # parse_page_two(page_urls[7])
+    # print('done')
+    date = datetime.now().strftime('%d_%m_%Y')
+
+    k = 0
+    for name in firm_name_done:
+        k+=1
+    print(k, 'info_list')
+
+    if date == '24_06_2022':
+        selenium_table = pd.DataFrame({'name': 'Хлопья овсяные',
+                              'brand name': firm_name_done,
+                              'href': href_list
+                                })
+        selenium_table.to_excel(f'another_table{date}.xlsx')
 
 
 
@@ -188,6 +286,7 @@ if __name__ == '__main__':
 # date = datetime.now().strftime('%d_%m_%Y')
 #
 # table.to_excel(f'table{date}.xlsx')
+
 
 
 
